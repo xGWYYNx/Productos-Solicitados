@@ -3,10 +3,11 @@ package com.sena.edu.tallerSolicitudProdcutos;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,4 +91,58 @@ public class productosController {
                 .status(HttpStatus.CREATED)
                 .body(nuevoPedido);
     }
+
+    @PutMapping("/pedidos/{id}/confirmar")
+    public ResponseEntity<?> confirmarPedido(@PathVariable Long id) {
+
+        pedido pedidoEncontrado = null;
+
+        for (pedido p : pedidos) {
+
+            if (p.getId().equals(id)) {
+                pedidoEncontrado = p;
+                break;
+            }
+        }
+
+        if (pedidoEncontrado == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("El pedido no existe");
+        }
+
+        producto productoEncontrado = null;
+
+        for (producto p : inventario) {
+
+            if (p.getId().equals(pedidoEncontrado.getProductoId())) {
+                productoEncontrado = p;
+                break;
+            }
+        }
+
+        if (productoEncontrado == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("El producto no existe");
+        }
+
+        if (productoEncontrado.getStock() < pedidoEncontrado.getCantidad()) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("No hay stock suficiente");
+        }
+
+        productoEncontrado.setStock(
+                productoEncontrado.getStock() - pedidoEncontrado.getCantidad()
+        );
+
+        pedidoEncontrado.setEstado(estadoPedido.CONFIRMADO);
+
+        return ResponseEntity.ok(pedidoEncontrado);
+    }
+
 }
