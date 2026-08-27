@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sena.edu.tallerSolicitudProdcutos.model.pedido;
 import com.sena.edu.tallerSolicitudProdcutos.model.prioridad;
 import com.sena.edu.tallerSolicitudProdcutos.model.estadoPedido;
 import com.sena.edu.tallerSolicitudProdcutos.model.producto;
+
 
 @RestController
 public class productosController {
@@ -229,6 +231,104 @@ public class productosController {
         pedidoEncontrado.setEstado(estadoPedido.DESPACHADO);
 
         return ResponseEntity.ok(pedidoEncontrado);
+    }
+
+
+
+    // Endpoint 5 Get de Pedidos
+
+    // pedidos pendientes
+
+    @GetMapping("/pedidos/pendientes")
+    public List<pedido> pedidosPendientes() {
+
+        List<pedido> resultado = new ArrayList<>();
+
+        for (pedido p : pedidos) {
+
+            if (p.getEstado() == estadoPedido.PENDIENTE) {
+                resultado.add(p);
+            }
+        }
+
+        return resultado;
+    }
+
+    // Pedidos urgentes
+    @GetMapping("/pedidos/urgentes")
+    public List<pedido> pedidosUrgentes() {
+
+        List<pedido> resultado = new ArrayList<>();
+
+        for (pedido p : pedidos) {
+
+            if (p.getPrioridad() == prioridad.URGENTE) {
+                resultado.add(p);
+            }
+        }
+
+        return resultado;
+    }
+
+    // Pedidos por estado
+    @GetMapping("/pedidos/estado")
+    public ResponseEntity<?> pedidosPorEstado(@RequestParam estadoPedido estado) {
+
+        List<pedido> resultado = new ArrayList<>();
+
+        for (pedido p : pedidos) {
+
+            if (p.getEstado() == estado) {
+                resultado.add(p);
+            }
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    // Resumen de pedidos
+
+    @GetMapping("/pedidos/resumen")
+    public ResponseEntity<?> resumenPedidos() {
+
+        int total = pedidos.size();
+        int pendientes = 0;
+        int confirmados = 0;
+        int despachados = 0;
+        int cancelados = 0;
+        int urgentes = 0;
+
+        for (pedido p : pedidos) {
+
+            if (p.getEstado() == estadoPedido.PENDIENTE) {
+                pendientes++;
+            }
+
+            if (p.getEstado() == estadoPedido.CONFIRMADO) {
+                confirmados++;
+            }
+
+            if (p.getEstado() == estadoPedido.DESPACHADO) {
+                despachados++;
+            }
+
+            if (p.getEstado() == estadoPedido.CANCELADO) {
+                cancelados++;
+            }
+
+            if (p.getPrioridad() == prioridad.URGENTE) {
+                urgentes++;
+            }
+        }
+
+        return ResponseEntity.ok(
+            "Total de pedidos: " + total +
+            "\nPendientes: " + pendientes +
+            "\nConfirmados: " + confirmados +
+            "\nDespachados: " + despachados +
+            "\nCancelados: " + cancelados +
+            "\nUrgentes: " + urgentes
+        );
     }
 
 
