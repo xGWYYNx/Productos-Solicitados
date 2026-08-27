@@ -135,7 +135,11 @@ public class productosController {
 
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body("No hay stock suficiente");
+                    .body("No hay stock suficiente. El pedido permanece PENDIENTE");
+
+                    // Endpoint Boss Final
+                    // Decisión tomada:
+                    // Se decidio mantener el pedido en estado PENDIENTE cuando no exista suficiente inventario para atenderlo. De esta manera, el sistema no confirma una solicitud que no puede cumplir, pero tampoco elimina ni pierde el pedido.
         }
 
         productoEncontrado.setStock(
