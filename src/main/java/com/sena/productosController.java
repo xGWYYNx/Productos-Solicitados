@@ -372,7 +372,40 @@ public class productosController {
     // Documentacion endpoint 
     // Regla de desempate: cuando dos o más pedidos tienen la misma prioridad, se atiende primero el pedido con el ID más bajo, debido a que corresponde al pedido creado primero. Solo se consideran pedidos en estado PENDIENTE.
 
+    // EndPoint 7 Producto en Riesgo
+    @GetMapping("/pedidos/en-riesgo")
+    public ResponseEntity<?> pedidosEnRiesgo() {
 
+        List<pedido> resultado = new ArrayList<>();
+
+        for (pedido ped : pedidos) {
+
+            // Solo revisamos pedidos pendientes
+            if (ped.getEstado() != estadoPedido.PENDIENTE) {
+                continue;
+            }
+
+            // Buscar el producto del pedido
+            for (producto p : inventario) {
+
+                if (p.getId().equals(ped.getProductoId())) {
+
+                    // Verificar si no hay stock suficiente
+                    if (ped.getCantidad() > p.getStock()) {
+
+                        resultado.add(ped);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        return ResponseEntity.ok(resultado);
+    }
+
+    // Doc
+    // Condición crítica seleccionada: se considera que un pedido está en riesgo cuando se encuentra en estado PENDIENTE y la cantidad solicitada es superior al stock disponible del producto asociado. En este caso el pedido no puede ser atendido correctamente hasta que exista inventario suficiente.
     
 
 }
