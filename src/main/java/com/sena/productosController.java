@@ -331,5 +331,48 @@ public class productosController {
         );
     }
 
+    @GetMapping("/pedidos/siguiente")
+    public ResponseEntity<?> siguientePedido() {
+
+        pedido siguiente = null;
+
+        for (pedido p : pedidos) {
+
+            if (p.getEstado() != estadoPedido.PENDIENTE) {
+                continue;
+            }
+
+            if (siguiente == null) {
+                siguiente = p;
+                continue;
+            }
+
+            if (p.getPrioridad().ordinal() > siguiente.getPrioridad().ordinal()) {
+                siguiente = p;
+            }
+
+            else if (p.getPrioridad() == siguiente.getPrioridad()
+                    && p.getId() < siguiente.getId()) {
+
+                siguiente = p;
+            }
+        }
+
+        if (siguiente == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No hay pedidos pendientes");
+        }
+
+        return ResponseEntity.ok(siguiente);
+    }
+
+
+    // Documentacion endpoint 
+    // Regla de desempate: cuando dos o más pedidos tienen la misma prioridad, se atiende primero el pedido con el ID más bajo, debido a que corresponde al pedido creado primero. Solo se consideran pedidos en estado PENDIENTE.
+
+
+    
 
 }
