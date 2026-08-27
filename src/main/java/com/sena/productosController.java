@@ -145,4 +145,54 @@ public class productosController {
         return ResponseEntity.ok(pedidoEncontrado);
     }
 
+
+    @PutMapping("/pedidos/{id}/cancelar")
+    public ResponseEntity<?> cancelarPedido(@PathVariable Long id) {
+
+        pedido pedidoEncontrado = null;
+
+        for (pedido p : pedidos) {
+
+            if (p.getId().equals(id)) {
+                pedidoEncontrado = p;
+                break;
+            }
+        }
+
+        if (pedidoEncontrado == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("El pedido no existe");
+        }
+
+        if (pedidoEncontrado.getEstado() == estadoPedido.CANCELADO) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("El pedido ya está cancelado");
+        }
+
+        // Si el pedido estaba confirmado,
+        // devolvemos la cantidad al inventario
+        if (pedidoEncontrado.getEstado() == estadoPedido.CONFIRMADO) {
+
+            for (producto p : inventario) {
+
+                if (p.getId().equals(pedidoEncontrado.getProductoId())) {
+
+                    p.setStock(
+                        p.getStock() + pedidoEncontrado.getCantidad()
+                    );
+
+                    break;
+                }
+            }
+        }
+
+        pedidoEncontrado.setEstado(estadoPedido.CANCELADO);
+
+        return ResponseEntity.ok(pedidoEncontrado);
+    }
+
 }
