@@ -195,4 +195,41 @@ public class productosController {
         return ResponseEntity.ok(pedidoEncontrado);
     }
 
+
+
+
+    // Endpoint 4 Despachar pedido confirmado
+    @PutMapping("/pedidos/{id}/despachar")
+    public ResponseEntity<?> despacharPedido(@PathVariable Long id) {
+
+        pedido pedidoEncontrado = null;
+
+        for (pedido p : pedidos) {
+
+            if (p.getId().equals(id)) {
+                pedidoEncontrado = p;
+                break;
+            }
+        }
+
+        if (pedidoEncontrado == null) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("El pedido no existe");
+        }
+
+        if (pedidoEncontrado.getEstado() != estadoPedido.CONFIRMADO) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Solo se pueden despachar pedidos CONFIRMADOS");
+        }
+
+        pedidoEncontrado.setEstado(estadoPedido.DESPACHADO);
+
+        return ResponseEntity.ok(pedidoEncontrado);
+    }
+
+
 }
