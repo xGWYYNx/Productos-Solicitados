@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.sena.edu.tallerSolicitudProdcutos.model.pedido;
-import com.sena.edu.tallerSolicitudProdcutos.model.prioridad;
-import com.sena.edu.tallerSolicitudProdcutos.model.estadoPedido;
-import com.sena.edu.tallerSolicitudProdcutos.model.producto;
+import com.sena.model.pedido;
+import com.sena.model.prioridad;
+import com.sena.model.estadoPedido;
+import com.sena.model.producto;
 
 
 @RestController

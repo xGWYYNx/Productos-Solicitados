@@ -1,4 +1,4 @@
-package com.sena.edu.tallerSolicitudProdcutos.model;
+package com.sena.model;
 
 public enum estadoPedido {
     PENDIENTE,
